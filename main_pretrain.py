@@ -56,7 +56,7 @@ else:
     _umap_available = True
 
 
-@hydra.main(version_base="1.2")
+@hydra.main() # version_base="1.2"
 def main(cfg: DictConfig):
     # hydra doesn't allow us to add new keys for "safety"
     # set_struct(..., False) disables this behavior and allows us to add more parameters
