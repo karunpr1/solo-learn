@@ -9,6 +9,9 @@ from detectron2.engine import DefaultTrainer, default_argument_parser, default_s
 from detectron2.evaluation import COCOEvaluator, PascalVOCDetectionEvaluator
 from detectron2.layers import get_norm
 from detectron2.modeling.roi_heads import ROI_HEADS_REGISTRY, Res5ROIHeads
+from detectron2.data.datasets import register_coco_instances
+import torch
+import torch.distributed as dist
 
 
 @ROI_HEADS_REGISTRY.register()
@@ -34,8 +37,9 @@ class Trainer(DefaultTrainer):
         if "coco" in dataset_name:
             return COCOEvaluator(dataset_name, cfg, True, output_folder)
         else:
-            assert "voc" in dataset_name
-            return PascalVOCDetectionEvaluator(dataset_name)
+            print("assert VOC error")
+            # assert "voc" in dataset_name
+            # return PascalVOCDetectionEvaluator(dataset_name)
 
 
 def setup(args):
@@ -64,6 +68,18 @@ def main(args):
 
 
 if __name__ == "__main__":
+    register_coco_instances("price_labels_train", {},
+                            "/home/karun/detectron2/datasets/price_labels/price_labels_train/_annotations.coco.json",
+                            "/home/karun/detectron2/datasets/price_labels/price_labels_train")
+    register_coco_instances("price_labels_val", {},
+                            "/home/karun/detectron2/datasets/price_labels/price_labels_val/_annotations.coco.json",
+                            "/home/karun/detectron2/datasets/price_labels/price_labels_val")
+    device = torch.device('cuda:0')
+    os.environ['PYTORCH_CUDA_ALLOC_CONF'] = 'max_split_size_mb:128'
+    dist.init_process_group(backend='nccl', init_method="tcp://localhost:29500", world_size=1, rank=0, )
+    # dist.init_process_group(backend='nccl', init_method="env://localhost:12355", world_size=1, rank=0)
+    # torch.cuda.set_per_process_memory_fraction(0.8, 0)
+
     args = default_argument_parser().parse_args()
     print("Command Line Args:", args)
     launch(

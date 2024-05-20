@@ -9,9 +9,12 @@ MODEL:
     FREEZE_AT: 0
   RESNETS:
     NORM: "SyncBN"
+#    NORM: "BN"
 TEST:
   PRECISE_BN:
     ENABLED: True
+#    ENABLED: False
 SOLVER:
-  IMS_PER_BATCH: 16
-  BASE_LR: 0.02
+  IMS_PER_BATCH: 1
+#  BASE_LR: 0.02
+  BASE_LR: 0.00025
