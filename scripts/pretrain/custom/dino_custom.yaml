@@ -14,7 +14,7 @@ hydra:
   run:
     dir: .
 
-name: "dino-custom-dataset"
+name: "dino-pricetag-dataset"
 method: "dino"
 backbone:
   name: "resnet50"
@@ -28,7 +28,7 @@ momentum:
   final_tau: 1.0
 data:
   dataset: "custom"
-  train_path: "/home/karun/master_thesis/datasets/imagenet_like/freiburg_groceries_dataset/train"
+  train_path: "/home/karun/master_thesis/datasets/PriceTag.v1i.coco/train_data"
 #  val_path: "PATH_TO_VAL_DIR"  # remove this if there's no validation dir
   format: "image_folder" # data format, supports "image_folder", "dali" or "h5"
   num_workers: 12
@@ -56,7 +56,7 @@ auto_resume:
   enabled: True
 
 # overwrite PL stuff
-max_epochs: 100
+max_epochs: 400
 devices: [0]
 sync_batchnorm: True
 accelerator: "gpu"
