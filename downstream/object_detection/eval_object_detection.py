@@ -8,10 +8,26 @@ from detectron2.structures import BoxMode
 from detectron2.data import DatasetCatalog, MetadataCatalog
 from detectron2.evaluation import COCOEvaluator, inference_on_dataset
 from detectron2.data import build_detection_test_loader
+from detectron2.modeling.roi_heads import ROI_HEADS_REGISTRY, Res5ROIHeads
 import cv2
 import os
 import json
 import random
+from detectron2.layers import get_norm
+
+
+@ROI_HEADS_REGISTRY.register()
+class Res5ROIHeadsExtraNorm(Res5ROIHeads):
+    """
+    As described in the MOCO paper, there is an extra BN layer
+    following the res5 stage.
+    """
+    def _build_res5_block(self, cfg):
+        seq, out_channels = super()._build_res5_block(cfg)
+        norm = cfg.MODEL.RESNETS.NORM
+        norm = get_norm(norm, out_channels)
+        seq.add_module("norm", norm)
+        return seq, out_channels
 
 
 def get_pricetag_dicts(img_dir):
@@ -68,6 +84,7 @@ cfg.DATALOADER.NUM_WORKERS = 4
 cfg.SOLVER.IMS_PER_BATCH = 1
 cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.5  # Set a custom testing threshold
 cfg.MODEL.ROI_HEADS.NUM_CLASSES = 5
+cfg.MODEL.ROI_HEADS.NAME = "Res5ROIHeadsExtraNorm"
 cfg.DATASETS.TEST = ("russian_price_labels_val", )
 
 # Create a predictor
