@@ -9,6 +9,7 @@ import pickle
 from dtron_utils import *
 
 cfg_load_path = "dtron_OD_config.pickle"
+# output_dir = "./new_output"
 
 test_dataset_name = "russian_price_labels_test"
 test_data_dir = "/home/karun95/master_thesis/datasets/russian_price_labels/price_labels_test/"
@@ -16,9 +17,9 @@ test_images_path = "/home/karun95/master_thesis/datasets/russian_price_labels/pr
 test_annotation_path = "/home/karun95/master_thesis/datasets/russian_price_labels/price_labels_test/_annotations.coco.json"
 
 DatasetCatalog.register(test_dataset_name, lambda: get_pricetag_dicts(test_data_dir))
-MetadataCatalog.get(test_dataset_name).set(thing_classes=["-", "name", "old_price", "price", "promotion"])
+MetadataCatalog.get(test_dataset_name).set(thing_classes=["text", "name", "old_price", "price", "promotion"])
 
-class_names = ["product", "name", "old_price", "price", "promotion"]
+class_names = ["text", "name", "old_price", "price", "promotion"]
 metadata = {"thing_classes": class_names}
 
 with open(cfg_load_path, 'rb') as f:
@@ -47,4 +48,4 @@ predictor = DefaultPredictor(cfg)
 
 test_image(test_dataset_name, predictor, n=1, threshold=0.8)
 
-# coco_evaluator(cfg, predictor, test_dataset_name)
+coco_evaluator(cfg, predictor, test_dataset_name)
